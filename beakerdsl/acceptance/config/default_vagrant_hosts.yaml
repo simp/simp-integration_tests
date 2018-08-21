@@ -1,0 +1,25 @@
+---
+HOSTS:
+  puppetserver:
+    platform: el-7-x86_64
+    hypervisor: vagrant
+    roles:
+      - agent
+      - master
+      - default
+      - server
+    ip: 192.168.103.7
+    netmask: 255.255.255.0
+    network_mac: aabbcccc0007
+    vagrant_memsize: 4096
+    vb_gui: false
+    synced_folder: disabled
+CONFIG:
+  epel_url: http://192.168.103.7
+  nfs_server: none
+  consoleport: 443
+  box_url: file:///var/simpdev/ctessmer/src/simp-packer/boxname.json
+  add_el_extras: false
+  box: simpci/server-6.2.0-Beta2.el7-CentOS-7.0.x86-64
+  log_level: debug
+  type:      aio

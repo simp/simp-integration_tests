@@ -1,0 +1,19 @@
+HOSTS:
+  simp-server-el7:
+    roles:
+      - server
+      - default
+      - master
+    platform: el-7-x86_64
+    box:     simpci/server-6.2.0-Beta2.el7-CentOS-7.0.x86-64
+    box_url: file:///var/simpdev/ctessmer/src/simp-packer/boxname.json
+    ip: 192.168.103.7
+    netmask: 255.255.255.0
+    mac: aabbcccc0007
+    hypervisor: vagrant
+    synced_folder: disabled
+CONFIG:
+  log_level: debug
+  type:      aio
+  vagrant_memsize: 4096
+  ## vb_gui: true
