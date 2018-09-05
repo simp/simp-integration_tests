@@ -5,28 +5,17 @@ test_name 'integration_tests class'
 describe 'integration_tests class' do
   let(:manifest) {
     <<-EOS
-      class { 'integration_tests': }
+      file{ '/root/smoke_test.txt': content => 'Beaker wrote this file!' }
     EOS
   }
 
   context 'default parameters' do
-    # Using puppet_apply as a helper
     it 'should work with no errors' do
       apply_manifest(manifest, :catch_failures => true)
     end
 
     it 'should be idempotent' do
       apply_manifest(manifest, :catch_changes => true)
-    end
-
-
-    describe package('integration_tests') do
-      it { is_expected.to be_installed }
-    end
-
-    describe service('integration_tests') do
-      it { is_expected.to be_enabled }
-      it { is_expected.to be_running }
     end
   end
 end

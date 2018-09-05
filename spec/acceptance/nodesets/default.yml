@@ -1,19 +1,34 @@
+---
 HOSTS:
-  simp-server-el7:
-    roles:
-      - server
-      - default
-      - master
+  puppetserver:
     platform: el-7-x86_64
-    box:     simpci/server-6.2.0-Beta2.el7-CentOS-7.0.x86-64
-    box_url: file:///var/simpdev/ctessmer/src/simp-packer/boxname.json
+    hypervisor: vagrant
+    roles:
+      - agent
+      - master
+      - default
+      - server
     ip: 192.168.103.7
     netmask: 255.255.255.0
-    mac: aabbcccc0007
-    hypervisor: vagrant
+    network_mac: aabbcccc0007
+    vagrant_memsize: 4096
+    vb_gui: false
     synced_folder: disabled
 CONFIG:
+  epel_url: http://192.168.103.7
+  nfs_server: none
+  consoleport: 443
+  box_url: <%=
+    require 'simp/beaker/nodeset_helpers'
+    h = Simp::Beaker::NodesetHelpers.new
+    h.fail_unless_env_vars_are_set_for('puppetserver')
+  # TODO: method to get box name
+  %>
+  add_el_extras: false
+  box: <%=
+  #box: simpci/server-6.2.0-Beta2.el7-CentOS-7.0.x86-64
+    require 'simp/beaker/nodeset_helpers'
+    fail_unless_env_vars_are_set_for('puppetserver')
+  %>
   log_level: debug
   type:      aio
-  vagrant_memsize: 4096
-  ## vb_gui: true
