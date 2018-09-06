@@ -20,15 +20,14 @@ CONFIG:
   consoleport: 443
   box_url: <%=
     require 'simp/beaker/nodeset_helpers'
-    h = Simp::Beaker::NodesetHelpers.new
-    h.fail_unless_env_vars_are_set_for('puppetserver')
-  # TODO: method to get box name
+    h = Simp::Beaker::NodesetHelpers.new('puppetserver')
+    h.box_url
   %>
   add_el_extras: false
   box: <%=
-  #box: simpci/server-6.2.0-Beta2.el7-CentOS-7.0.x86-64
     require 'simp/beaker/nodeset_helpers'
-    fail_unless_env_vars_are_set_for('puppetserver')
+    h = Simp::Beaker::NodesetHelpers.new('puppetserver')
+    h.box_name
   %>
   log_level: debug
   type:      aio
