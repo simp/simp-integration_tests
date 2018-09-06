@@ -30,4 +30,4 @@ CONFIG:
     h.box_name
   %>
   log_level: debug
-  type:      aio
+  type:      simp
