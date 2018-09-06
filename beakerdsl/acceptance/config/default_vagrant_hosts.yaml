@@ -1,30 +1,4 @@
 ---
-<%-
-  def fail_unless_env_vars_are_set_for(boxname)
-    env_box      = "BEAKER_box__#{boxname}"
-    env_box_url  = "BEAKER_box_url__#{boxname}"
-    env_box_tree = 'BEAKER_box_tree'
-    test1 = ENV[env_box] && ENV[env_box_url]
-    test2 = ENV[env_box] && ENV[env_box_tree]
-
-require 'pry'; binding.pry
-    unless test1 || test2
-      ENV[var] || fail( "\n\n#{sep}\n" + <<MSG
-
---------------------------------------------------------------------------------
-ERROR: SIMP Beaker integration tests must set the environment variable
-
-  `#{var}`
-
-  #{env}=/path/to/boxname.json
-
---------------------------------------------------------------------------------
-
-MSG
-      )
-    end
-  end
--%>
 HOSTS:
   puppetserver:
     platform: el-7-x86_64
@@ -45,14 +19,15 @@ CONFIG:
   nfs_server: none
   consoleport: 443
   box_url: <%=
-    h = Simp::Beaker::NodesetHelpers.new
-    h.fail_unless_env_vars_are_set_for('puppetserver')
+    require 'simp/beaker/nodeset_helpers'
+    h = Simp::Beaker::NodesetHelpers.new('puppetserver')
+    h.box_url
   %>
   add_el_extras: false
   box: <%=
-    # simpci/server-6.2.0-Beta2.el7-CentOS-7.0.x86-64
-    h = Simp::Beaker::NodesetHelpers.new
-    h.fail_unless_env_vars_are_set_for('puppetserver')
+    require 'simp/beaker/nodeset_helpers'
+    h = Simp::Beaker::NodesetHelpers.new('puppetserver')
+    h.box_name
   %>
   log_level: debug
-  type:      aio
+  type:      simp
