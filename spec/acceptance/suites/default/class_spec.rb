@@ -21,8 +21,8 @@ describe 'integration_tests class' do
     end
 
     it 'should create the smoke test file' do
-      puppetserver = find_only_one('puppetserver')
-      on puppetserver, 'test -f /root/.beaker-suites.smoke_test.file'
+      puppetserver = find_at_most_one_host_with_role hosts, 'master'
+      on puppetserver, 'grep Beaker /root/.beaker-suites.smoke_test.file'
     end
   end
 end
