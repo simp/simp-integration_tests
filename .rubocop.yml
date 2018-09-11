@@ -4,7 +4,8 @@ AllCops:
   Include:
     - '*.rb'
     - 'rakelib/*.rake'
-    - 'scripts/**/*.rb'
+    - 'spec/**/*.rb'
+    - 'spec/*.rb'
     - 'lib/**/*.rb'
   Exclude:
     - files/**/*
