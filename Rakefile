@@ -1,3 +1,3 @@
-require 'simp/rake/pupmod/helpers'
+require 'simp/rake/beaker'
+Simp::Rake::Beaker.new(File.dirname(__FILE__))
 
-Simp::Rake::Pupmod::Helpers.new(File.dirname(__FILE__))
