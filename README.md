@@ -1,76 +1,44 @@
-**FIXME**: Ensure the badges are correct and complete, then remove this message!
-
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html) [![Build Status](https://travis-ci.org/simp/pupmod-simp-integration_tests.svg)](https://travis-ci.org/simp/pupmod-simp-integration_tests) [![SIMP compatibility](https://img.shields.io/badge/SIMP%20compatibility-6.*-orange.svg)](https://img.shields.io/badge/SIMP%20compatibility-6.*-orange.svg)
 
 #### Table of Contents
+<!-- vim-markdown-toc GFM -->
 
-1. [Description](#description)
-2. [Setup - The basics of getting started with integration_tests](#setup)
-    * [What integration_tests affects](#what-integration_tests-affects)
-    * [Setup requirements](#setup-requirements)
-    * [Beginning with integration_tests](#beginning-with-integration_tests)
-3. [Usage - Configuration options and additional functionality](#usage)
-4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
-    * [Acceptance Tests - Beaker env variables](#acceptance-tests)
+* [Description](#description)
+  * [This is a SIMP project](#this-is-a-simp-project)
+* [Setup](#setup)
+  * [TODO: What integration_tests affects](#todo-what-integration_tests-affects)
+  * [TODO: Setup Requirements **OPTIONAL**](#todo-setup-requirements-optional)
+  * [Beginning with integration_tests](#beginning-with-integration_tests)
+* [Usage](#usage)
+* [Reference](#reference)
+* [Limitations](#limitations)
+* [Development](#development)
+  * [Acceptance tests](#acceptance-tests)
+
+<!-- vim-markdown-toc -->
 
 ## Description
 
-**FIXME:** Ensure the *Description* section is correct and complete, then remove this message!
+Automated integration tests for SIMP.
 
-Start with a one- or two-sentence summary of what the module does and/or what
-problem it solves. This is your 30-second elevator pitch for your module.
-Consider including OS and Puppet version compatability, and any other
-information users will need to quickly assess the module's viability within
-their environment.
+Uses:
 
-You can give more descriptive information in a second paragraph. This paragraph
-should answer the questions: "What does this module *do*?" and "Why would I use
-it?" If your module has a range of functionality (installation, configuration,
-management, etc.), this is the time to mention it.
+* beaker suites from [`simp-beaker-helpers`][simp-beaker-helpers]
+* vagrant boxes build by [`simp-packer`][simp-packer]
 
-### This is a SIMP module
+### This is a SIMP project
 
-This module is a component of the [System Integrity Management
-Platform](https://github.com/NationalSecurityAgency/SIMP), a
-compliance-management framework built on Puppet.
+This module is a tests components of the [System Integrity Management
+Platform][simp].
 
-If you find any issues, they may be submitted to our [bug
-tracker](https://simp-project.atlassian.net/).
-
-**FIXME:** Ensure the *This is a SIMP module* section is correct and complete, then remove this message!
-
-This module is optimally designed for use within a larger SIMP ecosystem, but
-it can be used independently:
-
- * When included within the SIMP ecosystem, security compliance settings will
-   be managed from the Puppet server.
- * If used independently, all SIMP-managed security subsystems are disabled by
-   default and must be explicitly opted into by administrators.  Please review
-   the parameters in
-   [`simp/simp_options`](https://github.com/simp/pupmod-simp-simp_options) for
-   details.
+If you find any issues, submit them to our [bug tracker][simp-jira].
 
 ## Setup
 
-### What integration_tests affects
+### TODO: What integration_tests affects
 
-**FIXME:** Ensure the *What integration_tests affects* section is correct and complete, then remove this message!
 
-If it's obvious what your module touches, you can skip this section. For
-example, folks can probably figure out that your mysql_instance module affects
-their MySQL instances.
-
-If there's more that they should know about, though, this is the place to
-mention:
-
- * A list of files, packages, services, or operations that the module will
-   alter, impact, or execute.
- * Dependencies that your module automatically installs.
- * Warnings or other important notices.
-
-### Setup Requirements **OPTIONAL**
+### TODO: Setup Requirements **OPTIONAL**
 
 **FIXME:** Ensure the *Setup Requirements* section is correct and complete, then remove this message!
 
@@ -83,7 +51,12 @@ here.
 
 ### Beginning with integration_tests
 
-**FIXME:** Ensure the *Beginning with integration_tests* section is correct and complete, then remove this message!
+
+```sh
+BEAKER_vagrant_box_tree=$vagrant_boxes_dir \
+BEAKER_box__puppetserver="simpci/server-6.2.0-RC1.el7-CentOS-7.0.x86-64" \
+bundle exec rake beaker:suites
+```
 
 The very basic steps needed for a user to get the module up and running. This
 can include setup steps, if necessary, or it can be an example of the most
@@ -137,3 +110,10 @@ bundle exec rake beaker:suites
 
 Please refer to the [SIMP Beaker Helpers documentation](https://github.com/simp/rubygem-simp-beaker-helpers/blob/master/README.md)
 for more information.
+
+[simp]:                     https://github.com/NationalSecurityAgency/SIMP
+[simp-contrib]:             https://simp.readthedocs.io/en/master/contributors_guide/
+[simp-jira]:                https://simp-project.atlassian.net
+[simp-beaker-helpers]:      https://github.com/simp/rubygem-simp-beaker-helpers
+[simp-beaker-helpers-docs]: https://github.com/simp/rubygem-simp-beaker-helpers/
+[simp-packer]:              https://github.com/simp/simp-packer
