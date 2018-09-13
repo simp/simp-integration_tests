@@ -1,7 +1,10 @@
 ---
 HOSTS:
-  puppetserver:
-    platform: el-7-x86_64
+  puppet:
+    platform: <%=
+      require 'simp/beaker/nodeset_helpers'
+      Simp::Beaker::NodesetHelpers.new('puppet').box_platform
+    %>
     hypervisor: vagrant
     roles:
       - agent
@@ -14,20 +17,30 @@ HOSTS:
     vagrant_memsize: 4096
     vb_gui: false
     synced_folder: disabled
+    box_url: <%=
+      require 'simp/beaker/nodeset_helpers'
+      box_url = Simp::Beaker::NodesetHelpers.new('puppet').box_url
+      warn '', '-' * 80, '', "box_url = '#{box_url}'", '', '-' * 80, ''
+      box_url
+    %>
+    box: <%=
+      require 'simp/beaker/nodeset_helpers'
+      Simp::Beaker::NodesetHelpers.new('puppet').box_name
+    %>
 CONFIG:
-  epel_url: http://192.168.103.7
+  epel_url: http://192.168.103.7  # don't use internet for initial yum
+  add_el_extras: false            # don't add "extra packages" for EPEL
+  # Turns on `--natdnshostresolver1 on` and `--natdnsproxy1 on`
+  #   See: https://www.virtualbox.org/manual/ch09.html#nat-adv-dns
+  #
+  # This is a (currently undocumented) option of beaker-vagrant.
+  #
+  # Turn this on if you need NAT-resolved DNS (which is sometimes helpful while
+  # troubleshooting "network unreachable" errors during  `puppet agent -t`, but
+  # turn it back off when you are done—under normal circumstances, we should be
+  # able to do without it.
+  #natdns: 'on'
   nfs_server: none
   consoleport: 443
-  box_url: <%=
-    require 'simp/beaker/nodeset_helpers'
-    h = Simp::Beaker::NodesetHelpers.new('puppetserver')
-    h.box_url
-  %>
-  add_el_extras: false
-  box: <%=
-    require 'simp/beaker/nodeset_helpers'
-    h = Simp::Beaker::NodesetHelpers.new('puppetserver')
-    h.box_name
-  %>
   log_level: debug
   type:      simp
