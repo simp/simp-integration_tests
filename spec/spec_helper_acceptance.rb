@@ -11,7 +11,7 @@ include Simp::BeakerHelpers
 
 RSpec.configure do |c|
   # ensure that environment OS is ready on each host
-  fix_errata_on hosts
+  # fix_errata_on hosts
 
   # Readable test descriptions
   c.formatter = :documentation
@@ -20,7 +20,7 @@ RSpec.configure do |c|
   c.before :suite do
     begin
       # Install modules and dependencies from spec/fixtures/modules
-      copy_fixture_modules_to(hosts)
+      # copy_fixture_modules_to(hosts)
     rescue StandardError, ScriptError => e
       # rubocop:disable Style/GuardClause, Style/Semicolon, Lint/Debugger
       if ENV['PRY']
