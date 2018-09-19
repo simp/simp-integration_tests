@@ -8,14 +8,15 @@
 * [Setup](#setup)
   * [Setup Requirements](#setup-requirements)
     * [SIMP Vagrant boxes](#simp-vagrant-boxes)
-  * [Beginning with integration_tests](#beginning-with-integration_tests)
 * [Usage](#usage)
   * [Basic usage](#basic-usage)
     * [Preferred](#preferred)
     * [Alternative](#alternative)
     * [Optional settings](#optional-settings)
-  * [beaker:suites[default]](#beakersuitesdefault)
-  * [beaker:suites[upgrade]](#beakersuitesupgrade)
+  * [Beaker Suites](#beaker-suites)
+    * [`default`](#default)
+    * [`upgrade`](#upgrade)
+      * [Special Requirements](#special-requirements)
 * [Troubleshooting](#troubleshooting)
   * [Inspecting troubled beaker VMs using  VRDE (RDP)](#inspecting-troubled-beaker-vms-using--vrde-rdp)
 * [Development](#development)
@@ -24,9 +25,10 @@
 
 ## Description
 
-Automated integration tests for SIMP—using beaker suites from
-[`simp-beaker-helpers`][simp-beaker-helpers] and vagrant boxes built by
-[`simp-packer`][simp-packer].
+Automated integration tests for SIMP.
+
+Uses Beaker suites from [`simp-beaker-helpers`][simp-beaker-helpers] and
+Vagrant boxes built by [`simp-packer`][simp-packer].
 
 ### This is a SIMP project
 
@@ -41,33 +43,26 @@ If you find any issues, submit them to our [bug tracker][simp-jira].
 
 * [VirtualBox][virtualbox]
 * [Vagrant][vagrant]
-* [SIMP] vagrant box files (`.box` and `.json`), built by
+* [SIMP] Vagrant box files (`.box` and `.json`), built by
   [simp-packer][simp-packer] and its rake tasks
 
 #### SIMP Vagrant boxes
 
-It is **strongly** recommended to keep the SIMP vagrant box files in
-a `vagrant`-consumable directory tree. This will allow vagrant and beaker to
+It is **strongly** recommended to keep the SIMP Vagrant box files in
+a `vagrant`-consumable directory tree. This will allow Vagrant and Beaker to
 use detect and use the latest (or a specific) build of a particular SIMP
 release.
 
-* [simp-packer][simp-packer] has rake tasks to create and populated this directory tree:
-* The rake task `rake vagrant:publish:local` will create/populate a local
-  directory tree from a `.box` and `.json` file.
+There are rake tasks in [simp-packer][simp-packer] to create/populate this
+directory tree:
+
+* The [simp-packer][simp-packer] rake task `rake vagrant:publish:local` will
+  create/populate a local directory tree from a `.box` and `.json` file.
 * The [simp-packer][simp-packer] rake task `simp:packer:matrix` will also
   create and populate this directory tree as it builds various boxes.
 
 
-### Beginning with integration_tests
-
-```sh
-BEAKER_vagrant_box_tree=$vagrant_boxes_dir \
-BEAKER_box__puppet="simpci/server-6.2.0-RC1.el7-CentOS-7.0.x86-64" \
-bundle exec rake beaker:suites
-```
-
 ## Usage
-
 
 ### Basic usage
 
@@ -76,17 +71,17 @@ bundle exec rake beaker:suites
 ```sh
 BEAKER_vagrant_box_tree=$PATH_TO_VAGRANT_BOXES_DIRTREE \
 BEAKER_box__puppet="simpci/server-6.2.0-RC1.el7-CentOS-7.0.x86-64" \
-bundle exec rake beaker:suites
+  bundle exec rake beaker:suites
 ```
 
 
 #### Alternative
-An alternative method, if you only have a vagrant `.box` + `.json` file bu no
+An alternative method, if you only have a Vagrant `.box` + `.json` file but no
 directory tree set up:
 
 ```sh
-BEAKER_box__puppet="$direct_path_to/server-6.2.0-RC1.el7-CentOS-7.0.x86-64.json
-bundle exec rake beaker:suites
+BEAKER_box__puppet="$direct_path_to/server-6.2.0-RC1.el7-CentOS-7.0.x86-64.json" \
+  bundle exec rake beaker:suites
 ```
 
 
@@ -98,38 +93,51 @@ You can force an SUT's platform by setting `BEAKER_box_platform__<sut>`:
 BEAKER_box_platform__puppet=el-7-x86_64
 ```
 
-### beaker:suites[default]
+### Beaker Suites
+
+#### `default`
 
 The default test suite currently just contains a smoke test to ensure that
-beaker can bring up a vagrant box and run `puppet apply`
+beaker can bring up a Vagrant box and run `puppet apply`
 
 Usage:
 
-```
+```sh
 BEAKER_vagrant_box_tree=$vagrant_boxes_dir \
 BEAKER_box__puppet="simpci/server-6.2.0-RC1.el7-CentOS-7.0.x86-64" \
-bundle exec rake beaker:suites[default]
+  bundle exec rake beaker:suites[default]
 ```
 
-### beaker:suites[upgrade]
+#### `upgrade`
 
-The **upgrade** Beaker suite tests upgrading an installation of an older
-version of SIMP using a never version's `.iso` and `unpack_dvd`.
+The **`upgrade`** suite validates the SIMP user guide's [General Upgrade Instructions for incremental upgrades][u0] by upgrading an older version of SIMP.  It:
 
-Special Requirements:
+1. Uploads a newer SIMP version's `.iso` file
+2. Runs `unpack_dvd`
+3. Runs `puppet agent -t`
 
-* a Vagrant `.box` from the _previous_ version of SIMP
-* an `.iso` file from the version of SIMP under test
+
+[u0]: https://github.com/simp/simp-doc/blob/8277eab/docs/user_guide/Upgrade_SIMP/General_Upgrade_Instructions.rst#incremental-updates
 
 Usage:
 
-```
+```sh
 BEAKER_vagrant_box_tree=$vagrant_boxes_dir \
-BEAKER_box__puppet="simpci/server-6.2.0-RC1.el7-CentOS-7.0.x86-64" \
-bundle exec rake beaker:suites[default]
+BEAKER_box__puppet="simpci/SIMP-6.1.0-0-Powered-by-CentOS-7.0-x86_64" \
+BEAKER_upgrade__new_simp_iso_path=$PWD\SIMP-6.2.0-RC1.el6-CentOS-6.9-x86_64.iso \
+  bundle exec rake beaker:suites[upgrade]
 ```
 
-Options:
+##### Special Requirements
+
+The `upgrade` suite's requirements work a little differently from normal
+integration tests:
+
+- The SUT (`BEAKER_box__puppet`) should be a Vagrant `.box` from the _previous_
+  version of SIMP.
+- The ISO (`BEAKER_upgrade__new_simp_iso_path`) should be an `.iso` file from
+  the current version of SIMP under test.
+
 
 
 ## Troubleshooting
@@ -141,6 +149,7 @@ Options:
 ```sh
 vboxmanage list runningvms
 ### => defaultyml_puppet_1536852168210_13152" {331df311-52c6-4471-b912-f730d8531e0c}
+
 vboxmanage controlvm "defaultyml_puppet_1536852168210_13152" vrde on
 vboxmanage controlvm "defaultyml_puppet_1536852168210_13152" vrdeport 5940
 ```
@@ -149,7 +158,7 @@ vboxmanage controlvm "defaultyml_puppet_1536852168210_13152" vrdeport 5940
 
 ## Development
 
-Please read our [Contribution Guide](http://simp-doc.readthedocs.io/en/stable/contributors_guide/index.html).
+Please read our [Contribution Guide][simp-contrib].
 
 [simp]:                     https://github.com/NationalSecurityAgency/SIMP
 [simp-contrib]:             https://simp.readthedocs.io/en/master/contributors_guide/

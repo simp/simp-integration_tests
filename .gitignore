@@ -18,3 +18,4 @@ dist
 /beakerdsl/failures
 /beakerdsl/junit
 /beakerdsl/log
+*.iso
