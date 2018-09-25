@@ -34,6 +34,7 @@ CONFIG:
   type:      simp                 # It's not 'pe' or 'aio'
   nfs_server: none
   consoleport: 443
+  log_level: debug
 
   # Turns on `--natdnshostresolver1 on` and `--natdnsproxy1 on`
   #   See: https://www.virtualbox.org/manual/ch09.html#nat-adv-dns

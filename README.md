@@ -110,14 +110,14 @@ BEAKER_box__puppet="simpci/server-6.2.0-RC1.el7-CentOS-7.0.x86-64" \
 
 #### `upgrade`
 
-The **`upgrade`** suite validates the SIMP user guide's [General Upgrade Instructions for incremental upgrades][u0] by upgrading an older version of SIMP.  It:
+The **`upgrade`** suite validates the SIMP user guide's [General Upgrade
+Instructions for incremental upgrades][u0] by upgrading an older version of
+SIMP.  It:
 
-1. Uploads a newer SIMP version's `.iso` file
+1. Uploads a newer SIMP version's `.iso` file from the host filesystem into the
+   puppetserver SUT.
 2. Runs `unpack_dvd`
 3. Runs `puppet agent -t`
-
-
-[u0]: https://github.com/simp/simp-doc/blob/8277eab/docs/user_guide/Upgrade_SIMP/General_Upgrade_Instructions.rst#incremental-updates
 
 Usage:
 
@@ -128,15 +128,18 @@ BEAKER_upgrade__new_simp_iso_path=$PWD\SIMP-6.2.0-RC1.el6-CentOS-6.9-x86_64.iso 
   bundle exec rake beaker:suites[upgrade]
 ```
 
+[u0]: https://github.com/simp/simp-doc/blob/8277eab/docs/user_guide/Upgrade_SIMP/General_Upgrade_Instructions.rst#incremental-updates
+
 ##### Special Requirements
 
-The `upgrade` suite's requirements work a little differently from normal
-integration tests:
+Because the `upgrade` suite starts from an older version of SIMP, its
+requirements work a little differently from normal integration tests:
 
-- The SUT (`BEAKER_box__puppet`) should be a Vagrant `.box` from the _previous_
-  version of SIMP.
-- The ISO (`BEAKER_upgrade__new_simp_iso_path`) should be an `.iso` file from
-  the current version of SIMP under test.
+| Environment variable                | Description                                                           |
+| ----------------------------------- | --------------------------------------------------------------------- |
+| `BEAKER_box__puppet`                | A Vagrant box tag from a _previous_ version of SIMP.                  |
+| `BEAKER_upgrade__new_simp_iso_path` | Path to an `.iso` file(s) for the current version of SIMP under test. |
+
 
 
 
