@@ -86,6 +86,7 @@ describe 'when an older version of SIMP' do
       on puppetserver, 'puppet resource service puppetserver'
       on puppetserver, 'puppet resource service named'
       @original_simp_version = on(puppetserver, 'cat /etc/simp/simp.version').stdout.strip
+      @puppetserver_fqdn = puppetserver.node_name
       ### on puppetserver, 'puppet resource service puppetserver ensure=running'
       ### on puppetserver, 'puppet resource service named ensure=running'
     end
@@ -113,34 +114,36 @@ describe 'when an older version of SIMP' do
         ##on puppetserver, 'yum versionlock add puppet-agent'
       end
 
+      pq_config =<<-PQCONFIG
+{
+    "puppetdb" : {
+      "server_urls" : "http://127.0.0.1:8138",
+      "cacert" : "/etc/puppetlabs/puppet/ssl/certs/ca.pem",
+      "cert" : "/etc/puppetlabs/puppet/ssl/certs/#{@puppetserver_fqdn}.pem",
+      "key" : "/etc/puppetlabs/puppet/ssl/private_keys/#{@puppetserver_fqdn}.pem"
+    }
+}
+PQCONFIG
+
+      on puppetserver, 'mkdir -p .puppetlabs/client-tools/'
+      create_remote_file(puppetserver, "/root/.puppetlabs/client-tools/puppetdb.conf", pq_config)
       on puppetserver, 'yum --verbose --rpmverbosity=warn -y update'
-      n=1
-      on puppetserver, "#{puppet_agent_t} |& tee /root/puppet-agent.log.#{n}", :acceptable_exit_codes => [0,2,6]
+      n=0
+      n += 1 ; on puppetserver, "#{puppet_agent_t} |& tee /root/puppet-agent.log.#{n}", :acceptable_exit_codes => [0,2,6]
+      pq_cmd = %Q[puppet query  "resources [certname,title]{ type = 'Class' and nodes { certname = '$(hostname -f)' and  deactivated is null and expired is null} order by certname }" | ruby -r json -r yaml -e "j=JSON.parse(STDIN.read); h = {}; j.each{|x| h[x['certname']]||= []; h[x['certname']] << x['title'] };  puts h.to_yaml" > puppetserver-classes.#{n}.yaml]
+      on puppetserver, pq_cmd
       on puppetserver, 'puppet resource cron puppetagent ensure=absent'
-
-      # fails here
+      on puppetserver, 'systemctl restart puppetserver'
+      20.times do
+        n += 1 ; on puppetserver, "#{puppet_agent_t} --noop |& tee /root/puppet-agent.log.#{n}", :acceptable_exit_codes => [0,2,6]
+        on puppetserver, 'puppet resource cron puppetagent ensure=absent'
+        pq_cmd = %Q[puppet query  "resources [certname,title]{ type = 'Class' and nodes { certname = '$(hostname -f)' and  deactivated is null and expired is null} order by certname }" | ruby -r json -r yaml -e "j=JSON.parse(STDIN.read); h = {}; j.each{|x| h[x['certname']]||= []; h[x['certname']] << x['title'] };  puts h.to_yaml" > puppetserver-classes.#{n}.yaml]
+        on puppetserver, pq_cmd
+      end
+      on puppetserver, 'ps -ef | grep puppetserver'
+      on puppetserver, 'cat /etc/sysconfig/puppetserver'
 require 'pry'; binding.pry
 
-      #----------------------------
-      on puppetserver, 'puppet resource cron puppetagent ensure=absent'
-      on puppetserver, 'puppet resource cron puppetagent ensure=absent'
-      #   vim /etc/puppetlabs/code/environments/simp/modules/pupmod/manifests/master/sysconfig.pp +76
-      #
-      #  SIMP-5021 changed this from:
-      #       $_java_temp_dir = "${::pupmod::vardir}/pserver_tmp"
-      #  to:
-      #
-      #       $_java_temp_dir = "${dirname(fact('puppet_settings.master.server_datadir'))}/pserver_tmp"
-      #
-      #  - $pupmod::vardir defaults to ` $::pupmod::params::puppet_config['vardir']`
-      #  - $::pupmod::params::puppet_config['vardir'] => '/opt/puppetlabs/puppet/cache'
-      #
-require 'pry'; binding.pry
-###      r1_a = on puppetserver, 'ps -ef | grep puppetserver'
-###      r1_b = on puppetserver, 'ls -ld /opt/puppetlabs/puppet/cache/pserver_tmp /opt/puppetlabs/puppet/cache'
-###      r1_x = on puppetserver, 'chown puppet:puppet /opt/puppetlabs/puppet/cache/pserver_tmp /opt/puppetlabs/puppet/cache'
-###      puppet resource file /opt/puppetlabs/puppet/cache owner=puppet group=puppet
-      #----------------------------
       # SIMP-5021 is not as solved as we thought, because the RPM install  but a workaround will be documented
       #
       # exit code 2 = puppet changes + something (because it's an upgrade)
