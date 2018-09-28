@@ -34,7 +34,7 @@ Vagrant boxes built by [`simp-packer`][simp-packer].
 
 ### This is a SIMP project
 
-This module is a tests components of the [System Integrity Management
+This project contains tests for the [System Integrity Management
 Platform][simp].
 
 If you find any issues, submit them to our [bug tracker][simp-jira].
