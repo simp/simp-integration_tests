@@ -1,3 +1,31 @@
-* Mon Jan 1 1970 First Last <email@domain.com> - 0.0.1
-- FIXME: something you did
-- FIXME: something else you did
+* Fri Sep 28 2018 Chris Tessmer <chris.tessmer@onyxpoint.com> - 0.2.0-0
+
+- Added
+  - `upgrade` suite
+    - Working 6.1.0 -> 6.2.0 upgrade tests
+    - ISO upload support
+    - RPM injection support (rough)
+- Changed
+  - Improved README
+  - Tidied up nodeset
+- Removed
+  - beakerdsl files
+  - Module files (part two)
+
+* Thu Sep 13 2018 Chris Tessmer <chris.tessmer@onyxpoint.com> - 0.1.0
+
+- Added
+  - beaker-rspec support
+    - `default` suite
+    - smoke test
+  - rake tasks
+  - README
+- Changed
+  - Fleshed out nodeset/lib helper logic with ENV variables
+- Removed
+  - Module files (part one)
+
+* Tue Aug 2018 Chris Tessmer <chris.tessmer@onyxpoint.com> - 0.0.1
+
+- Added
+  - First successful beakerdsl builds using simp-packer Vagrant boxes

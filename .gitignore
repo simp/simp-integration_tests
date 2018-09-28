@@ -2,10 +2,6 @@
 .yardoc
 dist
 /pkg
-/spec/fixtures
-/spec/rp_env
-!/spec/hieradata/default.yaml
-!/spec/fixtures/site.pp
 /.rspec_system
 /.vagrant
 /.bundle
@@ -15,7 +11,5 @@ dist
 /doc
 /log
 *.log
-/beakerdsl/failures
-/beakerdsl/junit
-/beakerdsl/log
 *.iso
+*.rpm

@@ -1,22 +1,11 @@
 ---
 HOSTS:
   puppet:
+    hypervisor: vagrant
     platform: <%=
       require 'simp/beaker/nodeset_helpers'
       Simp::Beaker::NodesetHelpers.new('puppet').box_platform
     %>
-    hypervisor: vagrant
-    roles:
-      - agent
-      - master
-      - default
-      - server
-    ip: 192.168.103.7
-    netmask: 255.255.255.0
-    network_mac: aabbcccc0007
-    vagrant_memsize: 4096
-    vb_gui: false
-    synced_folder: disabled
     box_url: <%=
       require 'simp/beaker/nodeset_helpers'
       box_url = Simp::Beaker::NodesetHelpers.new('puppet').box_url
@@ -27,20 +16,36 @@ HOSTS:
       require 'simp/beaker/nodeset_helpers'
       Simp::Beaker::NodesetHelpers.new('puppet').box_name
     %>
+    roles:
+      - agent
+      - master
+      - default
+      - server
+    ip: 192.168.103.7
+    netmask: 255.255.255.0
+    network_mac: aabbcccc0007
+    vagrant_memsize: 4096
+    vagrant_cpus: 2
+    vb_gui: false
+    synced_folder: disabled
 CONFIG:
   epel_url: http://192.168.103.7  # don't use internet for initial yum
   add_el_extras: false            # don't add "extra packages" for EPEL
-  # Turns on `--natdnshostresolver1 on` and `--natdnsproxy1 on`
-  #   See: https://www.virtualbox.org/manual/ch09.html#nat-adv-dns
-  #
-  # This is a (currently undocumented) option of beaker-vagrant.
-  #
-  # Turn this on if you need NAT-resolved DNS (which is sometimes helpful while
-  # troubleshooting "network unreachable" errors during  `puppet agent -t`, but
-  # turn it back off when you are done—under normal circumstances, we should be
-  # able to do without it.
-  #natdns: 'on'
+  type:      simp                 # It's not 'pe' or 'aio'
   nfs_server: none
   consoleport: 443
   log_level: debug
-  type:      simp
+
+  # Turns on `--natdnshostresolver1 on` and `--natdnsproxy1 on`
+  #   See: https://www.virtualbox.org/manual/ch09.html#nat-adv-dns
+  #
+  # 'natdns' is a (currently undocumented) option of beaker-vagrant.
+  #
+  # * Turn this on if you need NAT-resolved DNS (which is sometimes helpful
+  #   while troubleshooting "network unreachable" errors from `puppet agent -t`
+  #
+  # * Remember to turn it back off when you are done, though!
+  #   - Under normal circumstances, SIMP integration tests manage their own
+  #     internal DHCP and DNS, and shouldn't need natdns.
+  #
+  ###natdns: 'on'

@@ -17,6 +17,8 @@
     * [`default`](#default)
     * [`upgrade`](#upgrade)
       * [Special Requirements](#special-requirements)
+      * [Options](#options)
+* [Roadmap](#roadmap)
 * [Troubleshooting](#troubleshooting)
   * [Inspecting troubled beaker VMs using  VRDE (RDP)](#inspecting-troubled-beaker-vms-using--vrde-rdp)
 * [Development](#development)
@@ -32,7 +34,7 @@ Vagrant boxes built by [`simp-packer`][simp-packer].
 
 ### This is a SIMP project
 
-This module is a tests components of the [System Integrity Management
+This project contains tests for the [System Integrity Management
 Platform][simp].
 
 If you find any issues, submit them to our [bug tracker][simp-jira].
@@ -61,6 +63,8 @@ directory tree:
 * The [simp-packer][simp-packer] rake task `simp:packer:matrix` will also
   create and populate this directory tree as it builds various boxes.
 
+The location of the tree can be specified using the environment variable
+`BEAKER_vagrant_box_tree` (see the examples below).
 
 ## Usage
 
@@ -68,12 +72,16 @@ directory tree:
 
 #### Preferred
 
+![simp-integration_tests][img0]
+
+[img0]: assets/simp-integration_tests.png
+
+
 ```sh
 BEAKER_vagrant_box_tree=$PATH_TO_VAGRANT_BOXES_DIRTREE \
 BEAKER_box__puppet="simpci/server-6.2.0-RC1.el7-CentOS-7.0.x86-64" \
   bundle exec rake beaker:suites
 ```
-
 
 #### Alternative
 An alternative method, if you only have a Vagrant `.box` + `.json` file but no
@@ -83,7 +91,6 @@ directory tree set up:
 BEAKER_box__puppet="$direct_path_to/server-6.2.0-RC1.el7-CentOS-7.0.x86-64.json" \
   bundle exec rake beaker:suites
 ```
-
 
 #### Optional settings
 
@@ -103,42 +110,76 @@ beaker can bring up a Vagrant box and run `puppet apply`
 Usage:
 
 ```sh
-BEAKER_vagrant_box_tree=$vagrant_boxes_dir \
-BEAKER_box__puppet="simpci/server-6.2.0-RC1.el7-CentOS-7.0.x86-64" \
+BEAKER_vagrant_box_tree=$PATH_TO_VAGRANT_BOXES_DIRTREE \
+BEAKER_box__puppet="simpci/server-6.2.0-RC1.el6-CentOS-6.9.x86-64" \
   bundle exec rake beaker:suites[default]
 ```
 
 #### `upgrade`
 
-The **`upgrade`** suite validates the SIMP user guide's [General Upgrade Instructions for incremental upgrades][u0] by upgrading an older version of SIMP.  It:
+![simp-integration_tests][img1]
 
-1. Uploads a newer SIMP version's `.iso` file
+[img1]: assets/simp-integration_tests-upgrade.png
+
+The **`upgrade`** suite validates the SIMP user guide's [General Upgrade
+Instructions for incremental upgrades][u0] by upgrading an older version of
+SIMP.  It:
+
+1. Uploads a newer SIMP version's `.iso` file from the host filesystem into the
+   puppetserver SUT.
+  - Uploads any `*.noarch.rpm` files from the local project's directory into
+    the puppet server's yum repository before running `unpack_dvd`
 2. Runs `unpack_dvd`
-3. Runs `puppet agent -t`
-
-
-[u0]: https://github.com/simp/simp-doc/blob/8277eab/docs/user_guide/Upgrade_SIMP/General_Upgrade_Instructions.rst#incremental-updates
+3. Runs `yum update -y`
+4. Runs `puppet agent -t`
 
 Usage:
 
 ```sh
 BEAKER_vagrant_box_tree=$vagrant_boxes_dir \
 BEAKER_box__puppet="simpci/SIMP-6.1.0-0-Powered-by-CentOS-7.0-x86_64" \
-BEAKER_upgrade__new_simp_iso_path=$PWD\SIMP-6.2.0-RC1.el6-CentOS-6.9-x86_64.iso \
+BEAKER_upgrade__new_simp_iso_path=$PWD\SIMP-6.2.0-RC1.el7-CentOS-7.0-x86_64.iso \
   bundle exec rake beaker:suites[upgrade]
 ```
 
+[u0]: https://github.com/simp/simp-doc/blob/8277eab/docs/user_guide/Upgrade_SIMP/General_Upgrade_Instructions.rst#incremental-updates
+
 ##### Special Requirements
 
-The `upgrade` suite's requirements work a little differently from normal
-integration tests:
-
-- The SUT (`BEAKER_box__puppet`) should be a Vagrant `.box` from the _previous_
-  version of SIMP.
-- The ISO (`BEAKER_upgrade__new_simp_iso_path`) should be an `.iso` file from
-  the current version of SIMP under test.
+Because the `upgrade` suite starts from an older version of SIMP, its
+requirements work a little differently from normal integration tests:
 
 
+
+| Environment variable                | Description                                          |
+| ----------------------------------- | ---------------------------------------------------- |
+| `BEAKER_box__puppet`                | A Vagrant box tag from a _previous_ version of SIMP. |
+| `BEAKER_upgrade__new_simp_iso_path` | Path to the current version of SIMP's `.iso` file(s) |
+
+##### Options
+
+* If you need to inject new `*.rpm` files into the local yum repo before
+  `unpack_dvd` is run, place them in the project's top-level directory before
+  running the suite.
+
+
+## Roadmap
+
+- [ ] Flesh out README
+- [ ] Add integration tests to cover pre-release matrix
+  - [ ] Add tests for the _current_ version of SIMP as an SUT
+  - [ ] Add suites for different `.box` modes
+    - [ ] Different `.box` modes require simp-packer SIMP-5238
+    - [ ] linux-min needs simp-packer SIMP-5166
+- [ ] Formally link tests to corresponding simp-doc procedures
+  - [ ] link them
+  - [ ] calculate coverage
+- [ ] Provide better methods for patch staging
+  - [ ] Apply RPMs
+    - [x] inject in yum repo
+    - [ ] apply directly
+  - [ ] Apply patch files
+  - [ ] Control when patches are delivered?
 
 ## Troubleshooting
 
