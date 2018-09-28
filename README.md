@@ -72,6 +72,11 @@ The location of the tree can be specified using the environment variable
 
 #### Preferred
 
+![simp-integration_tests][img0]
+
+[img0]: assets/simp-integration_tests.png
+
+
 ```sh
 BEAKER_vagrant_box_tree=$PATH_TO_VAGRANT_BOXES_DIRTREE \
 BEAKER_box__puppet="simpci/server-6.2.0-RC1.el7-CentOS-7.0.x86-64" \
@@ -111,6 +116,10 @@ BEAKER_box__puppet="simpci/server-6.2.0-RC1.el6-CentOS-6.9.x86-64" \
 ```
 
 #### `upgrade`
+
+![simp-integration_tests][img1]
+
+[img1]: assets/simp-integration_tests-upgrade.png
 
 The **`upgrade`** suite validates the SIMP user guide's [General Upgrade
 Instructions for incremental upgrades][u0] by upgrading an older version of
