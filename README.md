@@ -17,6 +17,8 @@
     * [`default`](#default)
     * [`upgrade`](#upgrade)
       * [Special Requirements](#special-requirements)
+      * [Options](#options)
+* [Roadmap](#roadmap)
 * [Troubleshooting](#troubleshooting)
   * [Inspecting troubled beaker VMs using  VRDE (RDP)](#inspecting-troubled-beaker-vms-using--vrde-rdp)
 * [Development](#development)
@@ -61,6 +63,8 @@ directory tree:
 * The [simp-packer][simp-packer] rake task `simp:packer:matrix` will also
   create and populate this directory tree as it builds various boxes.
 
+The location of the tree can be specified using the environment variable
+`BEAKER_vagrant_box_tree` (see the examples below).
 
 ## Usage
 
@@ -101,7 +105,7 @@ beaker can bring up a Vagrant box and run `puppet apply`
 Usage:
 
 ```sh
-BEAKER_vagrant_box_tree=$vagrant_boxes_dir \
+BEAKER_vagrant_box_tree=$PATH_TO_VAGRANT_BOXES_DIRTREE \
 BEAKER_box__puppet="simpci/server-6.2.0-RC1.el7-CentOS-6.9.x86-64" \
   bundle exec rake beaker:suites[default]
 ```
@@ -136,13 +140,37 @@ BEAKER_upgrade__new_simp_iso_path=$PWD\SIMP-6.2.0-RC1.el6-CentOS-7.0-x86_64.iso 
 Because the `upgrade` suite starts from an older version of SIMP, its
 requirements work a little differently from normal integration tests:
 
+
+
 | Environment variable                | Description                                          |
 | ----------------------------------- | ---------------------------------------------------- |
 | `BEAKER_box__puppet`                | A Vagrant box tag from a _previous_ version of SIMP. |
 | `BEAKER_upgrade__new_simp_iso_path` | Path to the current version of SIMP's `.iso` file(s) |
 
+##### Options
+
+* If you need to inject new `*.rpm` files into the local yum repo before
+  `unpack_dvd` is run, place them in the project's top-level directory before
+  running the suite.
 
 
+## Roadmap
+
+- [ ] Flesh out README
+- [ ] Add integration tests to cover pre-release matrix
+  - [ ] Add tests for the _current_ version of SIMP as an SUT
+  - [ ] Add suites for different `.box` modes
+    - [ ] Different `.box` modes require simp-packer SIMP-5238
+    - [ ] linux-min needs simp-packer SIMP-5166
+- [ ] Formally link tests to corresponding simp-doc procedures
+  - [ ] link them
+  - [ ] calculate coverage
+- [ ] Provide better methods for patch staging
+  - [ ] Apply RPMs
+    - [x] inject in yum repo
+    - [ ] apply directly
+  - [ ] Apply patch files
+  - [ ] Control when patches are delivered?
 
 ## Troubleshooting
 
