@@ -106,7 +106,7 @@ Usage:
 
 ```sh
 BEAKER_vagrant_box_tree=$PATH_TO_VAGRANT_BOXES_DIRTREE \
-BEAKER_box__puppet="simpci/server-6.2.0-RC1.el7-CentOS-6.9.x86-64" \
+BEAKER_box__puppet="simpci/server-6.2.0-RC1.el6-CentOS-6.9.x86-64" \
   bundle exec rake beaker:suites[default]
 ```
 
@@ -129,7 +129,7 @@ Usage:
 ```sh
 BEAKER_vagrant_box_tree=$vagrant_boxes_dir \
 BEAKER_box__puppet="simpci/SIMP-6.1.0-0-Powered-by-CentOS-7.0-x86_64" \
-BEAKER_upgrade__new_simp_iso_path=$PWD\SIMP-6.2.0-RC1.el6-CentOS-7.0-x86_64.iso \
+BEAKER_upgrade__new_simp_iso_path=$PWD\SIMP-6.2.0-RC1.el7-CentOS-7.0-x86_64.iso \
   bundle exec rake beaker:suites[upgrade]
 ```
 
