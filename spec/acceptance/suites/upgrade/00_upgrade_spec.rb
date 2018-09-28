@@ -1,15 +1,15 @@
 require 'spec_helper_acceptance'
 
-# The `upgrade` suite validates the SIMP user guide's [General Upgrade
-# Instructions for incremental upgrades][u0].
+# The `upgrade` suite validates the SIMP user guide's General Upgrade
+# Instructions for incremental upgrades.
 #
-# It automates the [Verify SIMP server RPM upgrade pre-release checklist][u1].
+# It automates the Verify SIMP server RPM upgrade pre-release checklist.
 #
 # Example:
 #
 #   BEAKER_vagrant_box_tree=$vagrant_boxes_dir \
 #   BEAKER_box__puppet="simpci/SIMP-6.1.0-0-Powered-by-CentOS-7.0-x86_64" \
-#   BEAKER_upgrade__new_simp_iso_path=$PWD\SIMP-6.2.0-RC1.el6-CentOS-6.9-x86_64.iso \
+#   BEAKER_upgrade__new_simp_iso_path=$PWD\SIMP-6.2.0-RC1.el6-CentOS-7.0-x86_64.iso \
 #   bundle exec rake beaker:suites[upgrade]
 #
 # Requirements:
@@ -17,8 +17,9 @@ require 'spec_helper_acceptance'
 # - The SUT (`BEAKER_box__puppet`) is a PREVIOUS version of SIMP.
 # - The ISO (`BEAKER_upgrade__new_simp_iso_path`) is the current version of SIMP.
 #
-# [u0]: https://github.com/simp/simp-doc/blob/8277eab/docs/user_guide/Upgrade_SIMP/General_Upgrade_Instructions.rst#incremental-updates
-# [u1]: https://github.com/simp/simp-doc/blob/aebb9f7/docs/contributors_guide/maintenance/iso_release_procedures/Pre_Release_Checklist.rst#verify-simp-server-rpm-upgrade
+# Optional:
+#
+# - Any *.rpm files you want to inject into the yum repo prior to `unpack_dvd`
 
 test_name 'General Upgrade: incremental upgrades'
 
